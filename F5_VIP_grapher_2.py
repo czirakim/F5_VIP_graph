@@ -122,22 +122,13 @@ def get_uri_pool(item):
                         uri.append(thing)
                         index = match.index(segment)
                         line1 = match[index+1]
-                        print(line1)
-                        # this is for switch statements
-                        if 'pool' in segment:
-                            found = re.findall(r"pool (.*?) ", segment)
-                            print('FOUND0', found)
-                            pool.append(found[0])
-                        # this is for "if uri" statements 
-                        elif 'pool' in line1:
+                        if 'pool' in line1:
                             found = re.findall(r"pool (.*?) ", line1)
-                            print('FOUND', found)
                             pool.append(found[0])
                             # for else pool lines
                             if (index+2) < len(match):
                                 if 'pool' in match[index+2]:
                                     found = re.findall(r"pool (.*?) ", match[index+2])
-                                    print('FOUND2', found)
                                     pool.append(found[0])
                                     uri.append(f'else_{thing}')    
                         else:
@@ -146,20 +137,23 @@ def get_uri_pool(item):
                             if (index+2) < len(match):
                                 if 'pool' in match[index+2]:
                                     found = re.findall(r"pool (.*?) ", match[index+2])
-                                    print('FOUND1', found)
                                     pool.append(found[0])
                                     uri.append(f'else_{thing}')  
         
         # create a list of tuples [(uri,pool)]                    
         my_list = list(itertools.zip_longest(uri, pool))
-    # for switch statements
-    tmp = re.findall(r"(?s)(?<=switch \[HTTP::uri\] )(.*})", item)
+    # for SWITCH statements
+    # find every thing after 'switch', till empty line
+    tmp = re.findall(r"(?s)(?<=switch \[HTTP::uri\] )(.*})(?:(?:\r*\n){2})", item)
+    #tmp = re.findall(r"(?s)(?<=switch \[HTTP::uri\] )(.*})", item)
     for segment in tmp:
-        # get teh pool list
+        # get the pool list
         found_pool = re.findall(r"pool (.*?) ", segment)
+        # get the uri list
         found_uri = re.findall(r'"([^"]*[^.\s])"', segment)
+        # create a list of tuples
         my_list_switch = list(itertools.zip_longest(found_uri, found_pool))
-        print(found_uri)
+    
     if my_list_switch:
         return my_list + my_list_switch
     else:
@@ -240,7 +234,6 @@ def add_obj():
                 data1 = rule["apiAnonymous"]
                 # this the list of tuples [(uri, pool)]
                 custom_list = get_uri_pool(data1)
-                print(custom_list)
                 for thing in custom_list:
                     if thing[1]:
                         members_list = get_members(thing[1])['items']
