@@ -73,7 +73,7 @@ except requests.exceptions.RequestException as e:
     exit()
 else:
     logg.info(f"Virtual Server name: {vip_name}")
-    it = json.loads(vip_response.text)
+    reply = json.loads(vip_response.text)
 
 
 # add nodes and edges to the graph: vip-->pool-->nodes
@@ -83,12 +83,11 @@ def vip2nodes(vips, pools, nodes, pool_name, member_list, label_string):
     label1 = pool_name
     net.add_node(pools, label=label1, color='#3da831')
     if label_string == 'default':
-        net.add_edge(vips, pools, label=label_string)        
+        net.add_edge(vips, pools, label=label_string)
     elif label_string is None:
         net.add_edge(vips, pools, label='else/default')
     else:
         net.add_edge(vips, pools, label=f'uri: {label_string}')
-        
 
     # pool --> nodes
     for member in member_list:
@@ -110,7 +109,7 @@ def get_uri_pool(item):
     regex = r"{([^{}]*)}"
     # get a list of {...}
     match = re.findall(regex, item)
-    #print ('match', match)
+    # print ('match', match)
     if match:
         for segment in match:
             # get everything that is between " " , domains and uri
@@ -122,44 +121,36 @@ def get_uri_pool(item):
                         uri.append(thing)
                         index = match.index(segment)
                         line1 = match[index+1]
-                        print(line1)
-                        # this is for switch statements
-                        if 'pool' in segment:
-                            found = re.findall(r"pool (.*?) ", segment)
-                            print('FOUND0', found)
-                            pool.append(found[0])
-                        # this is for "if uri" statements 
-                        elif 'pool' in line1:
+                        if 'pool' in line1:
                             found = re.findall(r"pool (.*?) ", line1)
-                            print('FOUND', found)
                             pool.append(found[0])
                             # for else pool lines
                             if (index+2) < len(match):
                                 if 'pool' in match[index+2]:
                                     found = re.findall(r"pool (.*?) ", match[index+2])
-                                    print('FOUND2', found)
                                     pool.append(found[0])
-                                    uri.append(f'else_{thing}')    
+                                    uri.append(f'else_{thing}')
                         else:
                             pool.append(None)
                             # if uri has no pool check else pool on the next segment
                             if (index+2) < len(match):
                                 if 'pool' in match[index+2]:
                                     found = re.findall(r"pool (.*?) ", match[index+2])
-                                    print('FOUND1', found)
                                     pool.append(found[0])
-                                    uri.append(f'else_{thing}')  
-        
-        # create a list of tuples [(uri,pool)]                    
+                                    uri.append(f'else_{thing}')
+        # create a list of tuples [(uri,pool)]
         my_list = list(itertools.zip_longest(uri, pool))
-    # for switch statements
-    tmp = re.findall(r"(?s)(?<=switch \[HTTP::uri\] )(.*})", item)
+    # for SWITCH statements
+    # find every thing after 'switch', till empty line or 'end_switch'
+    tmp = re.findall(r"(?s)(?<=switch \[HTTP::uri\] )(.*)(?:(?:\r*\n){2}|\bend_switch\b)", item)
     for segment in tmp:
-        # get teh pool list
+        # get the pool list
         found_pool = re.findall(r"pool (.*?) ", segment)
+        # get the uri list
         found_uri = re.findall(r'"([^"]*[^.\s])"', segment)
+        # create a list of tuples
         my_list_switch = list(itertools.zip_longest(found_uri, found_pool))
-        print(found_uri)
+
     if my_list_switch:
         return my_list + my_list_switch
     else:
@@ -219,20 +210,24 @@ def add_obj():
     members_list = []
 
     # if we have a response
-    if it:
-        label1 = it['name']
+    if reply:
+        label1 = reply['name']
+        label2 = reply['destination'].replace('/Common/', '')
+        label3 = f"{label1} \n {label2}"
         # draw if vip has default pool
-        if 'pool' in it:
-            pool_name = it['pool'].replace('/Common/', '')
+        if 'pool' in reply:
+            pool_name = reply['pool'].replace('/Common/', '')
             members_list = get_members(pool_name)['items']
-            label2 = it['destination'].replace('/Common/', '')
-            label3 = f"{label1} \n {label2}"
+            # add the vip
             net.add_node(vips, label=label3, color='#3155a8')
             pools, nodes = vip2nodes(vips, pools, nodes, pool_name, members_list, 'default')
         # draw if vip has irules
-        if 'rules' in it:
+        if 'rules' in reply:
             # this is the list of irules of the vip
-            irule_file = it['rules']
+            irule_file = reply['rules']
+            if 'pool' not in reply:
+                # add the vip if it does not have a default pool
+                net.add_node(vips, label=label3, color='#3155a8')
             for item in irule_file:
                 item = item.replace('/Common/', '')
                 # get irule content where item is the name of irule
@@ -240,7 +235,6 @@ def add_obj():
                 data1 = rule["apiAnonymous"]
                 # this the list of tuples [(uri, pool)]
                 custom_list = get_uri_pool(data1)
-                print(custom_list)
                 for thing in custom_list:
                     if thing[1]:
                         members_list = get_members(thing[1])['items']
