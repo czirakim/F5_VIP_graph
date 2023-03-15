@@ -76,12 +76,83 @@ else:
     reply = json.loads(vip_response.text)
 
 
+# get pool memeber status
+def member_status(pool,member):
+    url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool}/members/~Common~{member}"
+    headers = {
+            'Authorization': f'Basic {API_string}',
+            'Accept': 'application/json'
+             }
+    try:
+        response = requests.request("GET", url, headers=headers, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if (response.status_code == 404 or response.status_code == 400):
+            logg.error(f"An error occurred while making the request:  {response.text}")
+    except requests.exceptions.RequestException as e:
+        logg.error(f"An error occurred while making the request: {e}")
+    else:
+        logg.info(f"Get Status: Pool {pool}-->member {member}")
+        data = json.loads(response.text)
+        return data['session'], data['state']
+
+# get pool status
+def pool_status(pool):
+    url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool}/stats"
+    headers = {
+            'Authorization': f'Basic {API_string}',
+            'Accept': 'application/json'
+             }
+    try:
+        response = requests.request("GET", url, headers=headers, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if (response.status_code == 404 or response.status_code == 400):
+            logg.error(f"An error occurred while making the request:  {response.text}")
+    except requests.exceptions.RequestException as e:
+        logg.error(f"An error occurred while making the request: {e}")
+    else:
+        logg.info(f"Get Status: Pool:{pool}")
+        data = json.loads(response.text)
+        result =  data['entries'][f'https://localhost/mgmt/tm/ltm/pool/{pool}/~Common~{pool}/stats']['nestedStats']['entries']
+        return result['status.statusReason']['description']
+
+# get VIP status
+def vip_status(vip):
+    url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/virtual/{vip}/stats"
+    headers = {
+            'Authorization': f'Basic {API_string}',
+            'Accept': 'application/json'
+             }
+    try:
+        response = requests.request("GET", url, headers=headers, verify=False)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if (response.status_code == 404 or response.status_code == 400):
+            logg.error(f"An error occurred while making the request:  {response.text}")
+    except requests.exceptions.RequestException as e:
+        logg.error(f"An error occurred while making the request: {e}")
+    else:
+        logg.info(f"Get Status: sVIP:{vip}")
+        data = json.loads(response.text)
+        result =  data['entries'][f'https://localhost/mgmt/tm/ltm/virtual/{vip}/~Common~{vip}/stats']['nestedStats']['entries']
+        return result['status.statusReason']['description']
+
+
 # add nodes and edges to the graph: vip-->pool-->nodes
 def vip2nodes(vips, pools, nodes, pool_name, member_list, label_string):
     # vip --> pool
     pools = pools + 1
     label1 = pool_name
-    net.add_node(pools, label=label1, color='#3da831')
+    pool_state = pool_status(pool_name)
+    # set color of the object
+    if 'down' in pool_state:
+        pool_color = '#b51024'
+    elif 'disabled' in pool_state:
+        pool_color =  '#0d0c0c'
+    else:
+        pool_color =  '#2ec920'
+    net.add_node(pools, label=label1, color=pool_color)
     if label_string == 'default':
         net.add_edge(vips, pools, label=label_string)
     elif label_string is None:
@@ -91,12 +162,18 @@ def vip2nodes(vips, pools, nodes, pool_name, member_list, label_string):
 
     # pool --> nodes
     for member in member_list:
-        nodes = nodes + 1
-        # print(f"member: {member}")
+        nodes = nodes + 1      
         label1 = member['name']
-        net.add_node(nodes, label=label1, color='#9a31a8')
+        member_session, member_state = member_status(pool_name, label1)
+        # set color of the object
+        if member_session == 'user-disabled':
+            member_color = '#0d0c0c'            
+        elif member_state == 'up':
+            member_color = '#2ec920'
+        else:
+            member_color = '#b51024'
+        net.add_node(nodes, label=label1, color=member_color)        
         net.add_edges([(pools, nodes, 2)])
-
     return pools, nodes
 
 
@@ -159,7 +236,7 @@ def get_uri_pool(item):
 
 # get the members of a pool
 def get_members(pool_name):
-    API_string = os.environ.get('Authorization_string')
+#    API_string = os.environ.get('Authorization_string')
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool_name}/members"
     headers = {
             'Authorization': f'Basic {API_string}',
@@ -219,7 +296,14 @@ def add_obj():
             pool_name = reply['pool'].replace('/Common/', '')
             members_list = get_members(pool_name)['items']
             # add the vip
-            net.add_node(vips, label=label3, color='#3155a8')
+            vip_state = vip_status(label1)
+            if 'down' in vip_state:
+                vip_color = '#b51024'
+            elif 'disabled' in vip_state:
+                vip_color =  '#0d0c0c'
+            else:
+                vip_color =  '#2ec920'
+            net.add_node(vips, label=label3, color=vip_color)
             pools, nodes = vip2nodes(vips, pools, nodes, pool_name, members_list, 'default')
         # draw if vip has irules
         if 'rules' in reply:
@@ -227,7 +311,14 @@ def add_obj():
             irule_file = reply['rules']
             if 'pool' not in reply:
                 # add the vip if it does not have a default pool
-                net.add_node(vips, label=label3, color='#3155a8')
+                vip_state = vip_status(label1)
+                if 'down' in vip_state:
+                    vip_color = '#b51024'
+                elif 'disabled' in vip_state:
+                    vip_color =  '#0d0c0c'
+                else:
+                    vip_color =  '#2ec920'
+                net.add_node(vips, label=label3, color=vip_color)
             for item in irule_file:
                 item = item.replace('/Common/', '')
                 # get irule content where item is the name of irule
@@ -238,9 +329,9 @@ def add_obj():
                 for thing in custom_list:
                     if thing[1]:
                         members_list = get_members(thing[1])['items']
-                        pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, thing[0])
+                        # pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, thing[0])
                         # with irule name
-                        # pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, item)
+                        pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, item)
 
 
 if __name__ == "__main__":
