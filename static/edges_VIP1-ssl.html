@@ -43,12 +43,6 @@
              
 
              
-             #config {
-                 float: left;
-                 width: 400px;
-                 height: 600px;
-             }
-             
 
              
         </style>
@@ -63,8 +57,6 @@
         </div>
 
         
-        
-            <div id="config"></div>
         
 
         <script type="text/javascript">
@@ -96,8 +88,8 @@
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "#2ec920", "id": 1000, "label": "VIP1 \n 10.0.0.121:80", "shape": "dot"}, {"color": "#b51024", "id": 501, "label": "pool11", "shape": "dot"}, {"color": "#b51024", "id": 1, "label": "11.11.11.11:80", "shape": "dot"}, {"color": "#b51024", "id": 2, "label": "12.12.12.12:80", "shape": "dot"}, {"color": "#b51024", "id": 502, "label": "pool21", "shape": "dot"}, {"color": "#b51024", "id": 3, "label": "21.21.21.21:80", "shape": "dot"}, {"color": "#b51024", "id": 4, "label": "22.22.22.22:80", "shape": "dot"}, {"color": "#2ec920", "id": 503, "label": "pool1", "shape": "dot"}, {"color": "#2ec920", "id": 5, "label": "1.1.1.1:80", "shape": "dot"}, {"color": "#0d0c0c", "id": 6, "label": "5.5.5.5:8080", "shape": "dot"}, {"color": "#b51024", "id": 7, "label": "8.8.8.8:80", "shape": "dot"}, {"color": "#b51024", "id": 8, "label": "9.9.9.9:80", "shape": "dot"}, {"color": "#b51024", "id": 504, "label": "pool11", "shape": "dot"}, {"color": "#b51024", "id": 9, "label": "11.11.11.11:80", "shape": "dot"}, {"color": "#b51024", "id": 10, "label": "12.12.12.12:80", "shape": "dot"}]);
-                  edges = new vis.DataSet([{"from": 1000, "label": "default", "to": 501}, {"from": 501, "to": 1, "width": 2}, {"from": 501, "to": 2, "width": 2}, {"from": 1000, "label": "uri: example_rule_1", "to": 502}, {"from": 502, "to": 3, "width": 2}, {"from": 502, "to": 4, "width": 2}, {"from": 1000, "label": "uri: example_rule_1", "to": 503}, {"from": 503, "to": 5, "width": 2}, {"from": 503, "to": 6, "width": 2}, {"from": 503, "to": 7, "width": 2}, {"from": 503, "to": 8, "width": 2}, {"from": 1000, "label": "uri: example_rule_1", "to": 504}, {"from": 504, "to": 9, "width": 2}, {"from": 504, "to": 10, "width": 2}]);
+                  nodes = new vis.DataSet([{"color": "#2ec920", "id": 1000, "label": "VIP1-ssl \n 10.0.0.131:443", "shape": "dot"}, {"color": "#2ec920", "id": 501, "label": "pool1", "shape": "dot"}, {"color": "#2ec920", "id": 1, "label": "1.1.1.1:80", "shape": "dot"}, {"color": "#0d0c0c", "id": 2, "label": "5.5.5.5:8080", "shape": "dot"}, {"color": "#b51024", "id": 3, "label": "8.8.8.8:80", "shape": "dot"}, {"color": "#b51024", "id": 4, "label": "9.9.9.9:80", "shape": "dot"}, {"color": "#b51024", "id": 502, "label": "pool21", "shape": "dot"}, {"color": "#b51024", "id": 5, "label": "21.21.21.21:80", "shape": "dot"}, {"color": "#b51024", "id": 6, "label": "22.22.22.22:80", "shape": "dot"}, {"color": "#2ec920", "id": 503, "label": "pool1", "shape": "dot"}, {"color": "#2ec920", "id": 7, "label": "1.1.1.1:80", "shape": "dot"}, {"color": "#0d0c0c", "id": 8, "label": "5.5.5.5:8080", "shape": "dot"}, {"color": "#b51024", "id": 9, "label": "8.8.8.8:80", "shape": "dot"}, {"color": "#b51024", "id": 10, "label": "9.9.9.9:80", "shape": "dot"}, {"color": "#b51024", "id": 504, "label": "pool11", "shape": "dot"}, {"color": "#b51024", "id": 11, "label": "11.11.11.11:80", "shape": "dot"}, {"color": "#b51024", "id": 12, "label": "12.12.12.12:80", "shape": "dot"}, {"color": "#b51024", "id": 505, "label": "pool21", "shape": "dot"}, {"color": "#b51024", "id": 13, "label": "21.21.21.21:80", "shape": "dot"}, {"color": "#b51024", "id": 14, "label": "22.22.22.22:80", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"from": 1000, "label": "default", "to": 501}, {"from": 501, "to": 1, "width": 2}, {"from": 501, "to": 2, "width": 2}, {"from": 501, "to": 3, "width": 2}, {"from": 501, "to": 4, "width": 2}, {"from": 1000, "label": "uri: example_rule_1", "to": 502}, {"from": 502, "to": 5, "width": 2}, {"from": 502, "to": 6, "width": 2}, {"from": 1000, "label": "uri: example_rule_1", "to": 503}, {"from": 503, "to": 7, "width": 2}, {"from": 503, "to": 8, "width": 2}, {"from": 503, "to": 9, "width": 2}, {"from": 503, "to": 10, "width": 2}, {"from": 1000, "label": "uri: example_rule_1", "to": 504}, {"from": 504, "to": 11, "width": 2}, {"from": 504, "to": 12, "width": 2}, {"from": 1000, "label": "uri: example_rule_11", "to": 505}, {"from": 505, "to": 13, "width": 2}, {"from": 505, "to": 14, "width": 2}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -110,8 +102,7 @@
 
                   var options = {
     "configure": {
-        "enabled": true,
-        "filter": true
+        "enabled": false
     },
     "edges": {
         "color": {
@@ -163,10 +154,6 @@
                   
 
 
-                  
-                  // if this network requires displaying the configure window,
-                  // put it in its div
-                  options.configure["container"] = document.getElementById("config");
                   
 
                   network = new vis.Network(container, data, options);

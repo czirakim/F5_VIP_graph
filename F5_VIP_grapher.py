@@ -42,6 +42,10 @@ options = {
     }
   }
   }
+# set colors
+black = '#0d0c0c'
+red = '#b51024'
+green = '#2ec920'
 
 # create a logger
 logg = logging.getLogger(__name__)
@@ -66,7 +70,7 @@ try:
     vip_response.raise_for_status()
 except requests.exceptions.HTTPError:
     if (vip_response.status_code == 404 or vip_response.status_code == 400):
-        logg.error(f"An error occurred while making the request:  {vip_response.text}")
+        logg.error(f"An error occurred while making the request: {vip_response.text}")
         exit()
 except requests.exceptions.RequestException as e:
     logg.error(f"An error occurred while making the request: {e}")
@@ -77,7 +81,7 @@ else:
 
 
 # get pool memeber status
-def member_status(pool,member):
+def member_status(pool, member):
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool}/members/~Common~{member}"
     headers = {
             'Authorization': f'Basic {API_string}',
@@ -95,6 +99,7 @@ def member_status(pool,member):
         logg.info(f"Get Status: Pool {pool}-->member {member}")
         data = json.loads(response.text)
         return data['session'], data['state']
+
 
 # get pool status
 def pool_status(pool):
@@ -114,8 +119,9 @@ def pool_status(pool):
     else:
         logg.info(f"Get Status: Pool:{pool}")
         data = json.loads(response.text)
-        result =  data['entries'][f'https://localhost/mgmt/tm/ltm/pool/{pool}/~Common~{pool}/stats']['nestedStats']['entries']
+        result = data['entries'][f'https://localhost/mgmt/tm/ltm/pool/{pool}/~Common~{pool}/stats']['nestedStats']['entries']
         return result['status.statusReason']['description']
+
 
 # get VIP status
 def vip_status(vip):
@@ -133,9 +139,9 @@ def vip_status(vip):
     except requests.exceptions.RequestException as e:
         logg.error(f"An error occurred while making the request: {e}")
     else:
-        logg.info(f"Get Status: sVIP:{vip}")
+        logg.info(f"Get Status: VIP:{vip}")
         data = json.loads(response.text)
-        result =  data['entries'][f'https://localhost/mgmt/tm/ltm/virtual/{vip}/~Common~{vip}/stats']['nestedStats']['entries']
+        result = data['entries'][f'https://localhost/mgmt/tm/ltm/virtual/{vip}/~Common~{vip}/stats']['nestedStats']['entries']
         return result['status.statusReason']['description']
 
 
@@ -147,11 +153,11 @@ def vip2nodes(vips, pools, nodes, pool_name, member_list, label_string):
     pool_state = pool_status(pool_name)
     # set color of the object
     if 'down' in pool_state:
-        pool_color = '#b51024'
+        pool_color = red
     elif 'disabled' in pool_state:
-        pool_color =  '#0d0c0c'
+        pool_color = black
     else:
-        pool_color =  '#2ec920'
+        pool_color = green
     net.add_node(pools, label=label1, color=pool_color)
     if label_string == 'default':
         net.add_edge(vips, pools, label=label_string)
@@ -162,17 +168,17 @@ def vip2nodes(vips, pools, nodes, pool_name, member_list, label_string):
 
     # pool --> nodes
     for member in member_list:
-        nodes = nodes + 1      
+        nodes = nodes + 1
         label1 = member['name']
         member_session, member_state = member_status(pool_name, label1)
         # set color of the object
         if member_session == 'user-disabled':
-            member_color = '#0d0c0c'            
+            member_color = black
         elif member_state == 'up':
-            member_color = '#2ec920'
+            member_color = green
         else:
-            member_color = '#b51024'
-        net.add_node(nodes, label=label1, color=member_color)        
+            member_color = red
+        net.add_node(nodes, label=label1, color=member_color)
         net.add_edges([(pools, nodes, 2)])
     return pools, nodes
 
@@ -236,7 +242,6 @@ def get_uri_pool(item):
 
 # get the members of a pool
 def get_members(pool_name):
-#    API_string = os.environ.get('Authorization_string')
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool_name}/members"
     headers = {
             'Authorization': f'Basic {API_string}',
@@ -298,11 +303,11 @@ def add_obj():
             # add the vip
             vip_state = vip_status(label1)
             if 'down' in vip_state:
-                vip_color = '#b51024'
+                vip_color = red
             elif 'disabled' in vip_state:
-                vip_color =  '#0d0c0c'
+                vip_color = black
             else:
-                vip_color =  '#2ec920'
+                vip_color = green
             net.add_node(vips, label=label3, color=vip_color)
             pools, nodes = vip2nodes(vips, pools, nodes, pool_name, members_list, 'default')
         # draw if vip has irules
@@ -313,11 +318,11 @@ def add_obj():
                 # add the vip if it does not have a default pool
                 vip_state = vip_status(label1)
                 if 'down' in vip_state:
-                    vip_color = '#b51024'
+                    vip_color = red
                 elif 'disabled' in vip_state:
-                    vip_color =  '#0d0c0c'
+                    vip_color = black
                 else:
-                    vip_color =  '#2ec920'
+                    vip_color = green
                 net.add_node(vips, label=label3, color=vip_color)
             for item in irule_file:
                 item = item.replace('/Common/', '')
@@ -337,6 +342,6 @@ def add_obj():
 if __name__ == "__main__":
     add_obj()
     net.repulsion(node_distance=100, spring_length=200)
-    net.show_buttons(filter_=True)
+#    net.show_buttons(filter_=True)
     net.options.__dict__.update(options)
-    net.show(f'./edges_{sys.argv[1]}.html')
+    net.show(f'./static/edges_{sys.argv[1]}.html')

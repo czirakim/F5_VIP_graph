@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <title>F5 VIP graph App</title>
+  </head>
+  <body>
+    <h1>F5 VIP graph App</h1>
+    <form action="/" method="post">
+      <label for="text_input">Virtual Server:</label>
+      <input type="text" id="text_input" name="text_input">
+      <button type="submit">Submit</button>
+    </form>
+    <br>
+    {% if result_file %}
+      <iframe src="{{ url_for('static', filename=result_file) }}" width="90%" height="610"></iframe>
+    {% endif %}
+  </body>
+</html>
