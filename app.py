@@ -9,11 +9,7 @@ app = Flask(__name__)
 @app.route('/',methods=['GET', 'POST'])
 def index():
     result_file = None
-   # return render_template('index.html')
 
-# Define the route to handle the form submission
-#@app.route('/submit', methods=['POST'])
-#def submit():
     if request.method == 'POST':
     # Get the text input from the form
         text_input = request.form['text_input']

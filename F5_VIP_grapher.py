@@ -54,17 +54,20 @@ logg.setLevel(logging.INFO)
 logg.addHandler(logger())
 
 # F5 device
-IP_ADDRESS = "192.168.88.100"
+IP_ADDRESS = os.environ.get('IP_ADDRESS')
 
 # VIP-name
 vip_name = f"{sys.argv[1]}"
 
 API_string = os.environ.get('Authorization_string')
 url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/virtual/{vip_name}"
+
+# HTTP headers
 headers = {
         'Authorization': f'Basic {API_string}',
         'Accept': 'application/json'
              }
+
 try:
     vip_response = requests.request("GET", url, headers=headers, verify=False)
     vip_response.raise_for_status()
@@ -83,10 +86,7 @@ else:
 # get pool memeber status
 def member_status(pool, member):
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool}/members/~Common~{member}"
-    headers = {
-            'Authorization': f'Basic {API_string}',
-            'Accept': 'application/json'
-             }
+
     try:
         response = requests.request("GET", url, headers=headers, verify=False)
         response.raise_for_status()
@@ -104,10 +104,7 @@ def member_status(pool, member):
 # get pool status
 def pool_status(pool):
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool}/stats"
-    headers = {
-            'Authorization': f'Basic {API_string}',
-            'Accept': 'application/json'
-             }
+
     try:
         response = requests.request("GET", url, headers=headers, verify=False)
         response.raise_for_status()
@@ -119,17 +116,14 @@ def pool_status(pool):
     else:
         logg.info(f"Get Status: Pool:{pool}")
         data = json.loads(response.text)
-        result = data['entries'][f'https://localhost/mgmt/tm/ltm/pool/{pool}/~Common~{pool}/stats']['nestedStats']['entries']
+        result = data['entries'][f'https://localhost/mgmt/tm/ltm/pool/~Common~{pool}/stats']['nestedStats']['entries']
         return result['status.statusReason']['description']
 
 
 # get VIP status
 def vip_status(vip):
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/virtual/{vip}/stats"
-    headers = {
-            'Authorization': f'Basic {API_string}',
-            'Accept': 'application/json'
-             }
+
     try:
         response = requests.request("GET", url, headers=headers, verify=False)
         response.raise_for_status()
@@ -141,7 +135,7 @@ def vip_status(vip):
     else:
         logg.info(f"Get Status: VIP:{vip}")
         data = json.loads(response.text)
-        result = data['entries'][f'https://localhost/mgmt/tm/ltm/virtual/{vip}/~Common~{vip}/stats']['nestedStats']['entries']
+        result = data['entries'][f'https://localhost/mgmt/tm/ltm/virtual/~Common~{vip}/stats']['nestedStats']['entries']
         return result['status.statusReason']['description']
 
 
@@ -243,10 +237,7 @@ def get_uri_pool(item):
 # get the members of a pool
 def get_members(pool_name):
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/pool/{pool_name}/members"
-    headers = {
-            'Authorization': f'Basic {API_string}',
-            'Accept': 'application/json'
-             }
+
     try:
         response = requests.request("GET", url, headers=headers, verify=False)
         response.raise_for_status()
@@ -265,10 +256,7 @@ def get_members(pool_name):
 def get_irule(rule_name):
     API_string = os.environ.get('Authorization_string')
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/rule/{rule_name}"
-    headers = {
-            'Authorization': f'Basic {API_string}',
-            'Accept': 'application/json'
-             }
+
     try:
         response = requests.request("GET", url, headers=headers, verify=False)
         response.raise_for_status()
@@ -334,9 +322,9 @@ def add_obj():
                 for thing in custom_list:
                     if thing[1]:
                         members_list = get_members(thing[1])['items']
-                        # pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, thing[0])
+                        pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, thing[0])
                         # with irule name
-                        pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, item)
+                        # pools, nodes = vip2nodes(vips, pools, nodes, thing[1], members_list, item)
 
 
 if __name__ == "__main__":
