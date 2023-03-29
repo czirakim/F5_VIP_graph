@@ -254,7 +254,6 @@ def get_members(pool_name):
 
 # get irule content
 def get_irule(rule_name):
-    API_string = os.environ.get('Authorization_string')
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/rule/{rule_name}"
 
     try:
