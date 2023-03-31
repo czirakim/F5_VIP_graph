@@ -3,24 +3,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <head>
-    <title>F5 VIP graph App</title>
+    <title>VIP graph App for F5 LTM</title>
       <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="static/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   </head>
   <body>
-    <h1>F5 VIP graph App</h1>
-    <form action="/" method="post">
-      <label for="text_input">Virtual Server:</label>
-      <input type="text" id="text_input" name="text_input">
-      <button type="submit">Submit</button>
-    </form>
+    <div class="valign-wrapper">
+      <h4><a>VIP graph</a> <a class="indigo-text text-darken-3">App for </a></h4>
+      <a href="https://www.f5.com/"><img src="static/F5-image.png"></a>
+      <h4 class="indigo-text text-darken-3"> LTM </h4>  
+    </div>
+    <div class="divider"></div>
     <br>
+    <div class="row center">
+      <form action="/" method="post">
+        <div class="container">      
+          <div class="row left">
+            <div class="valign-wrapper">
+              <div class="col s5">
+                <label for="text_input"><h5 class="indigo-text text-darken-3">Virtual Server:</h5></label>
+              </div>
+              <div class="input-field col s4 ">
+                <div class="left-align">
+                  <input type="text" id="text_input" name="text_input">
+                </div>
+              </div>
+              <div class="col s1">
+                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                  <i class="material-icons right">send</i>
+                </button>
+              </div>                 
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="row center">
+      <div class="row center-align">
+        <div class="valign-wrapper">
+          <div class="submit col s12">
+            <div  style="width: 75%; height: 550px; background-color: #dceaee;">
+            <br>
     {% if result_file %}
-      <iframe src="{{ url_for('static', filename=result_file) }}" width="90%" height="610"></iframe>
+      <iframe src="{{ url_for('static', filename=result_file) }}" width="90%" height="520"></iframe>
     {% endif %}
-  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="page-footer indigo darken-3">
+      <div class="footer-copyright">
+        <div class="container">
+          <div class="row">
+            <div class="col s12"></div>
+            Made by <a  href="https://latebits.com/">Mihai Cziraki </a>   using:       
+          <ul>
+            <li>Programming language: <a  href="https://www.python.org/">Python </a> 
+              <a  href="https://flask.palletsprojects.com">( Flask,</a>
+              <a  href="https://pyvis.readthedocs.io"> pyvis )</a> </li>
+            <li>CSS: <a  href="https://materializecss.com/">Materialize</a></li>
+          </ul>
+        </div>
+        </div>
+      </div>
+    </div>
+    </footer>
+
     <!--  Scripts-->
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="static/js/materialize.js"></script>

@@ -15,7 +15,7 @@ import itertools
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-net = Network()
+net = Network(height='500px', width='100%')
 
 # options for graph
 options = {
@@ -329,6 +329,6 @@ def add_obj():
 if __name__ == "__main__":
     add_obj()
     net.repulsion(node_distance=100, spring_length=200)
-#    net.show_buttons(filter_=True)
+    # net.show_buttons(filter_=True)
     net.options.__dict__.update(options)
     net.show(f'./static/edges_{sys.argv[1]}.html')
