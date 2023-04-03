@@ -6,6 +6,9 @@ This project is trying to create a visual representation of a F5 Virtual Server.
 <br>then the irule names and last the irules content. Based on this info it will draw , using pyvis library,
 <br>the connections between the VIP, pool and pool members. The result is saved as an html file.
 <br>As irules can be really complex, this is mainly for irules with "if" and "switch" clauses.
+<br>Then there is the app.py file that takes care of the web server part. It is using content from 
+<br>templates folder (where teh index html is) and static folder (where the html documents for each virtual servers are <br>generated, and also where the css and js part is)
+
 
 # Credits
 This was written by Mihai Cziraki

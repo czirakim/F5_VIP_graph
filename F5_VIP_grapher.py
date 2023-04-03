@@ -47,6 +47,12 @@ black = '#0d0c0c'
 red = '#b51024'
 green = '#2ec920'
 
+# clean up html files
+folder_path = './static'
+for filename in os.listdir(folder_path):
+    if filename.endswith('.html'):
+        os.remove(os.path.join(folder_path, filename))
+
 # create a logger
 logg = logging.getLogger(__name__)
 logg.setLevel(logging.INFO)
@@ -121,7 +127,7 @@ def pool_status(pool):
 
 
 # get VIP status
-def vip_status(vip):
+def vip_stats(vip):
     url = f"https://{IP_ADDRESS}/mgmt/tm/ltm/virtual/{vip}/stats"
 
     try:
@@ -136,7 +142,7 @@ def vip_status(vip):
         logg.info(f"Get Status: VIP:{vip}")
         data = json.loads(response.text)
         result = data['entries'][f'https://localhost/mgmt/tm/ltm/virtual/~Common~{vip}/stats']['nestedStats']['entries']
-        return result['status.statusReason']['description']
+        return result['status.statusReason']['description'], result['status.enabledState']['description']
 
 
 # add nodes and edges to the graph: vip-->pool-->nodes
@@ -288,10 +294,12 @@ def add_obj():
             pool_name = reply['pool'].replace('/Common/', '')
             members_list = get_members(pool_name)['items']
             # add the vip
-            vip_state = vip_status(label1)
-            if 'down' in vip_state:
+            vip_status , vip_state = vip_stats(label1)
+            if 'disable' in vip_state:
+                vip_color = black
+            elif 'down' in vip_status:
                 vip_color = red
-            elif 'disabled' in vip_state:
+            elif 'disabled' in vip_status:
                 vip_color = black
             else:
                 vip_color = green
@@ -303,10 +311,12 @@ def add_obj():
             irule_file = reply['rules']
             if 'pool' not in reply:
                 # add the vip if it does not have a default pool
-                vip_state = vip_status(label1)
-                if 'down' in vip_state:
+                vip_status , vip_state = vip_stats(label1)
+                if 'disable' in vip_state:
+                    vip_color = black
+                elif 'down' in vip_status:
                     vip_color = red
-                elif 'disabled' in vip_state:
+                elif 'disabled' in vip_status:
                     vip_color = black
                 else:
                     vip_color = green

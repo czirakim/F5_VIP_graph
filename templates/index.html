@@ -17,45 +17,40 @@
     </div>
     <div class="divider"></div>
     <br>
-    <div class="row center">
-      <form action="/" method="post">
-        <div class="container">      
-          <div class="row left">
+    <div class="container">  
+    <div class="row">
+      <form action="/" method="post"> 
             <div class="valign-wrapper">
               <div class="col s5">
                 <label for="text_input"><h5 class="indigo-text text-darken-3">Virtual Server:</h5></label>
-              </div>
-              <div class="input-field col s4 ">
-                <div class="left-align">
                   <input type="text" id="text_input" name="text_input">
-                </div>
               </div>
-              <div class="col s1">
+              <div class="col s3">
                 <button class="btn waves-effect waves-light" type="submit" name="action">Submit
                   <i class="material-icons right">send</i>
-                </button>
-              </div>                 
-                </div>
-              </div> 
-            </div>
-          </div>
-        </div>
+                </button>                            
+              </div>
+              </div>                  
       </form>
     </div>
-    <div class="row center">
-      <div class="row center-align">
+    </div>
+    <div class="container">
+    <div class="row center-align">
         <div class="valign-wrapper">
-          <div class="submit col s12">
-            <div  style="width: 75%; height: 550px; background-color: #dceaee;">
-            <br>
-    {% if result_file %}
+          <div class="submit col s12">            
+            <div  style="width: 100%; height: 550px; background-color: #dceaee;">
+              <br>
+            {% if result_file %}
       <iframe src="{{ url_for('static', filename=result_file) }}" width="90%" height="520"></iframe>
     {% endif %}
+              <br>              
             </div>
-          </div>
+            <p class="left-align">Generated at GMT: {{ time }}</p>
         </div>
-      </div>
+       </div>
     </div>
+  </div>
+ 
     <footer class="page-footer indigo darken-3">
       <div class="footer-copyright">
         <div class="container">
