@@ -16,15 +16,15 @@ def index():
     current_time = datetime.datetime.now(timezone('GMT')).strftime("%H:%M:%S")
 
     if request.method == 'POST':
-    # Get the text input from the form
+        # Get the text input from the form
         text_input = request.form['text_input']
-    # Run the Python script with the text input as an argument
+        # Run the Python script with the text input as an argument
         if not text_input:
-            text_input = f'no_vip_selected'
+            text_input = 'no_vip_selected'
         subprocess.check_output(['python3', 'F5_VIP_grapher.py', text_input])
-    # the result HTML
+        # the result HTML
         result_file = f'edges_{text_input}.html'
-    # Return the HTML to the user
+        # Return the HTML to the user
     return render_template('index.html', result_file=result_file, time=current_time)
 
 
