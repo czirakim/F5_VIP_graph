@@ -294,7 +294,7 @@ def add_obj():
             pool_name = reply['pool'].replace('/Common/', '')
             members_list = get_members(pool_name)['items']
             # add the vip
-            vip_status , vip_state = vip_stats(label1)
+            vip_status, vip_state = vip_stats(label1)
             if 'disable' in vip_state:
                 vip_color = black
             elif 'down' in vip_status:
@@ -311,7 +311,7 @@ def add_obj():
             irule_file = reply['rules']
             if 'pool' not in reply:
                 # add the vip if it does not have a default pool
-                vip_status , vip_state = vip_stats(label1)
+                vip_status, vip_state = vip_stats(label1)
                 if 'disable' in vip_state:
                     vip_color = black
                 elif 'down' in vip_status:
