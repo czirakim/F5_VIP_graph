@@ -11,7 +11,9 @@ This project is trying to create a visual representation of a F5 Virtual Server.
 <br>generated, and also where the css and js part is)
 <br>There are 2 environment variables:  *Authorization_string* (this is credentials for Basic authentication) 
 <br>and *IP_ADDRESS* (this is the IP of the F5 device).
-
+<br>
+<br> You can find more in this article: https://latebits.com/2023/04/11/virtual-server-graphical-app-for-f5-ltm/
+<br>
 
 # Credits
 This was written by Mihai Cziraki
