@@ -11,6 +11,9 @@ This project is trying to create a visual representation of a F5 Virtual Server.
 <br>generated, and also where the css and js part is)
 <br>There are 2 environment variables:  *Authorization_string* (this is credentials for Basic authentication) 
 <br>and *IP_ADDRESS* (this is the IP of the F5 device).
+<br>Dockerfile can be used to create a container and run the app.
+<br>The environment variables can be used like this when you build the container: 
+<br>*docker build --build-arg MY_AUTH=$Authorization_string --build-arg MY_IP=$IP_ADDRESS  -t my_container*
 <br>
 <br> You can find more in this article: https://latebits.com/2023/04/11/virtual-server-graphical-app-for-f5-ltm/
 <br>
