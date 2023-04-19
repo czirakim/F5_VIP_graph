@@ -8,9 +8,11 @@ This project is trying to create a visual representation of a F5 Virtual Server.
 <br>As irules can be really complex, this is mainly for irules with "if" and "switch" clauses.
 <br>Then there is the *app.py* file that takes care of the web server part. It is using content from 
 <br>*templates* folder (where the index html is) and *static* folder (where the html documents for each virtual servers are 
-<br>generated, and also where the css and js part is)
+<br>generated, and also where the css and js part is).
+<br>
 <br>There are 2 environment variables:  *Authorization_string* (this is credentials for Basic authentication) 
 <br>and *IP_ADDRESS* (this is the IP of the F5 device).
+<br>
 <br>Dockerfile can be used to create a container and run the app.
 <br>The environment variables can be used like this when you build the container: 
 <br>*docker build --build-arg MY_AUTH=$Authorization_string --build-arg MY_IP=$IP_ADDRESS  -t my_container*
